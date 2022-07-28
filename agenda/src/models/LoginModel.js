@@ -1,3 +1,4 @@
+const bcryptjs = require('bcryptjs')
 const mongoose = require('mongoose');
 const validator = require('validator')
 const LoginSchema = new mongoose.Schema({
@@ -17,7 +18,10 @@ class Login {
         this.valida();
 
         if(this.errors.length > 0) return; //Aqui ele verifica se tem algum conteudo no array "ERRORS" acima
+       
         try{
+            const salt = bcryptjs.genSaltSync()
+            this.body.password = bcryptjs.hashSync(this.body.password, salt)
             this.user = await LoginModel.create(this.body)
         } catch(e) {
             console.log(e)
