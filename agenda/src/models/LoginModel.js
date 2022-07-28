@@ -16,9 +16,13 @@ class Login {
     }
     async register() {
         this.valida();
-
         if(this.errors.length > 0) return; //Aqui ele verifica se tem algum conteudo no array "ERRORS" acima
        
+        await this.userExists();
+
+        if(this.errors.length > 0) return; //Aqui ele verifica se tem algum conteudo no array "ERRORS" acima
+
+
         try{
             const salt = bcryptjs.genSaltSync()
             this.body.password = bcryptjs.hashSync(this.body.password, salt)
@@ -27,6 +31,11 @@ class Login {
             console.log(e)
         }
         
+    }
+
+    async userExists(){
+        const user = await LoginModel.findOne({email: this.body.email})
+        if(user) this.errors.push('Usuario ja cadastrado!')
     }
 
     valida() {  
